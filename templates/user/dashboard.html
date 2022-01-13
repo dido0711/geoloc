@@ -1,0 +1,64 @@
+{% extends 'user/base.html' %}
+
+{% block page_content %}
+    <section class="content">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="box box-warning">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">General Elements</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                      <form role="form">
+                        <!-- text input -->
+                        <div class="form-group">
+                          <label>Name</label>
+                          <input id="username" type="text" class="form-control" placeholder="Enter ...">
+                        </div>
+                      </form>
+                    </div>
+                    <div class="box-footer">
+                        <button onclick="getLocation()" type="button" class="btn btn-info pull-right">Submit</button>
+                    </div>
+                    <!-- /.box-body -->
+                  </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        function getLocation() {
+            if ($('#username').val() === '') {
+                alert('Please fill your name');return;
+            }
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                console.log("not supported on this browser");
+            }
+        }
+
+        function showPosition(position) {
+            let coords = position.coords;
+            let param = {};
+            param.latitude = coords.latitude;
+            param.longitude = coords.longitude;
+            param.accuracy = coords.accuracy;
+            param.username = $('#username').val();
+            console.log(param);
+            $.ajax({
+                type: 'POST',
+                url: '/search_address',
+                data: param,
+                success: function (res) {
+                    if (res === 'error') {
+                        alert("Oops, Something went wrong!");return;
+                    } else {
+                        alert("Success");
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}
